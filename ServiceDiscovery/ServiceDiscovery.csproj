@@ -5,4 +5,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="CondenserDotNet.Client" Version="3.0.0-e631" />
+    <PackageReference Include="CondenserDotNet.Configuration" Version="3.0.0-e631" />
+  </ItemGroup>
 </Project>
