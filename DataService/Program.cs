@@ -72,7 +72,6 @@ namespace ServiceDiscovery
         {
             var logger = loggerFactory.CreateLogger("Default");
 
-            manager.AddApiUrl("/api/ strip=/api/");
             manager.WithDeregisterIfCriticalAfter(TimeSpan.FromSeconds(30));
             manager.AddHttpHealthCheck("health", 10).RegisterServiceAsync();
 
