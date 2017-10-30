@@ -1,0 +1,73 @@
+Add this
+#####
+private static IPAddress LocalIPAddress()
+{
+    if (!NetworkInterface.GetIsNetworkAvailable()) { return null; }
+
+    var host = Dns.GetHostEntry(Dns.GetHostName());
+
+    return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+}
+#####
+
+Enhance main with this:
+#####
+var port = ServiceManagerConfig.GetNextAvailablePort();
+
+var serviceName = "Service.Api";
+var serviceId = $"{serviceName}_{LocalIPAddress()}:{port}";
+#####
+
+Enhance kestrel config with this:
+#####
+.ConfigureServices(
+    services =>
+        {
+            services.Configure<ServiceManagerConfig>(
+                options =>
+                    {
+                        options.ServicePort = port;
+                        options.ServiceName = serviceName;
+                        options.ServiceId = serviceId;
+                        options.ServiceAddress = LocalIPAddress().ToString();
+                    });
+            services.AddSingleton<IConfigurationRegistry>(
+                CondenserConfigBuilder.FromConsul().WithAgentAddress("127.0.0.1").WithAgentPort(8500).Build());
+        })
+#####
+
+Enhance Startup Configure method signature with this
+#####
+, IServiceManager manager, IServiceRegistry serviceRegistry
+#####
+
+Enhance startup configure method with this:
+#####
+manager.AddApiUrl("/api/ strip=/api/");
+manager.WithDeregisterIfCriticalAfter(TimeSpan.FromSeconds(30));
+manager.AddHttpHealthCheck("health", 10).RegisterServiceAsync();
+#####
+
+Enhance ConfigureServices with this:
+#####
+services.AddConsulServices();
+#####
+
+Enhance response with this:
+#####
+var response = $"hello, world from {manager.ServiceName} @ {manager.ServiceAddress}:{manager.ServicePort}";
+#####
+
+1. Run Consul
+2. go to http://localhost:8500 and verify consul is running (keep open)
+
+3. Run Fabio
+4. go to http://localhost:9998 and verify fabio is running (keep open)
+5. verify fabio is registered with consul
+
+6. Run a few instances of ServiceDiscovery.exe
+7. go to Consul and verify they are registered
+8. go to Fabio and verify they are registered
+9. go to http://localhost:9999/api/ and verify that you can hit all instance [just reload it and watch the port change :-)]
+
+10. close all ServiceDiscovery.exe and go to part 2.
