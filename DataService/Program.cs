@@ -20,7 +20,7 @@ namespace ServiceDiscovery
             var port = ServiceManagerConfig.GetNextAvailablePort();
 
             var serviceName = "Service.Data";
-            var serviceId = $"{serviceName}_{LocalIPAddress()}:{port}";
+            var serviceId = $"{serviceName}_127.0.0.1:{port}";
 
             var apiHost = new WebHostBuilder()
                 .ConfigureLogging((_, factory) =>
@@ -41,7 +41,7 @@ namespace ServiceDiscovery
                         options.ServicePort = port;
                         options.ServiceName = serviceName;
                         options.ServiceId = serviceId;
-                        options.ServiceAddress = LocalIPAddress().ToString();
+                        options.ServiceAddress = "127.0.0.1";
                     });
                     services.AddSingleton<IConfigurationRegistry>(CondenserConfigBuilder.FromConsul().WithAgentAddress("127.0.0.1").WithAgentPort(8500).Build());
                 })
@@ -49,20 +49,6 @@ namespace ServiceDiscovery
                 .Build();
 
             apiHost.Run();
-        }
-
-        private static IPAddress LocalIPAddress()
-        {
-            if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-            {
-                return null;
-            }
-
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-
-            return host
-                .AddressList
-                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
         }
     }
 

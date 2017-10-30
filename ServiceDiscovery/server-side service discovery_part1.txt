@@ -1,21 +1,9 @@
-Add this to the program class
-#####
-private static IPAddress LocalIPAddress()
-{
-    if (!NetworkInterface.GetIsNetworkAvailable()) { return null; }
-
-    var host = Dns.GetHostEntry(Dns.GetHostName());
-
-    return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-}
-#####
-
 add this to the Main function:
 #####
 var port = ServiceManagerConfig.GetNextAvailablePort();
 
 var serviceName = "Service.Api";
-var serviceId = $"{serviceName}_{LocalIPAddress()}:{port}";
+var serviceId = $"{serviceName}_127.0.0.1:{port}";
 #####
 
 Replace kestrel config "options.Listen(IPAddress.Any, 5000, listenOptions => "
@@ -34,7 +22,7 @@ add this to the kestrel config:
                         options.ServicePort = port;
                         options.ServiceName = serviceName;
                         options.ServiceId = serviceId;
-                        options.ServiceAddress = LocalIPAddress().ToString();
+                        options.ServiceAddress = "127.0.0.1";
                     });
             services.AddSingleton<IConfigurationRegistry>(
                 CondenserConfigBuilder.FromConsul().WithAgentAddress("127.0.0.1").WithAgentPort(8500).Build());
@@ -63,10 +51,10 @@ modify the app.run response with this:
 var response = $"hello, world from {manager.ServiceName} @ {manager.ServiceAddress}:{manager.ServicePort}";
 #####
 
-1. Run Consul
+1. Run Consul (with commandline arguments "agent -dev -ui")
 2. go to http://localhost:8500 and verify consul is running (keep open)
 
-3. Run Fabio
+3. Run Fabio (no commandline arugments)
 4. go to http://localhost:9998 and verify fabio is running (keep open)
 5. verify fabio is registered with consul
 
