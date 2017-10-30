@@ -1,4 +1,4 @@
-﻿Enhance response with this:
+﻿replace ServiceDiscovery app.run response with this:
 #####
 var serviceData = await serviceRegistry.GetServiceInstanceAsync("Service.Data");
 var response = $"hello, world from {manager.ServiceName} @ {manager.ServiceAddress}:{manager.ServicePort} using Service.Data: {serviceData.ID}";
@@ -9,4 +9,3 @@ var response = $"hello, world from {manager.ServiceName} @ {manager.ServiceAddre
 3. Verify in Consul that they are registered
 4. Run a few instances of ServiceDiscovery.exe
 5. go to http://localhost:9999/api/ and see the response and how the ports rotate.
-6. play around until lunch you have earned it!
