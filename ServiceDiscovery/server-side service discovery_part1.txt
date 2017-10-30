@@ -1,4 +1,4 @@
-add this to the Main function:
+add this to the Main method:
 #####
 var port = ServiceManagerConfig.GetNextAvailablePort();
 

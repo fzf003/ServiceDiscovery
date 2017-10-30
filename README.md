@@ -10,7 +10,7 @@ Run solution and verify that <http://localhost:5000> returns "hello, world"
 
 ## Part 1
 
-Add this to the Main function:
+Add this to the Main method:
 
 ```C#
 var port = ServiceManagerConfig.GetNextAvailablePort();
